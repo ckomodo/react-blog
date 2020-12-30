@@ -29,9 +29,39 @@ app.get('/', function (req, res){
     res.send("blog is coming soon")
 })
 
+//USER routes
+
+//GET all users
+app.get('/api/users', function(req, res){
+    db.User.findAll().then(users=>{
+        res.json(users)
+    })
+})
+
+//POST/create users
+app.post('/api/users', function(req, res){
+    db.User.create({
+        username: req.body.username,
+        email:req.body.email,
+        password: req.body.password
+    }).then(newUser=>{
+        res.json(newUser)
+    }).catch(err=>{
+        res.status(500).json(err)
+    })
+})
+
+
+
+
+
+
+
+
+
 // Syncing our sequelize models and then starting our Express app
 // =============================================================
-db.sequelize.sync({force: true}).then(function() {
+db.sequelize.sync({force: false}).then(function() {
   app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
   });
