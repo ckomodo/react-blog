@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
     },
   });
   Article.associate = function (models) {
-
+    Article.belongsTo(models.Admin);
   };
   return Article;
 };

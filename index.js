@@ -26,7 +26,7 @@ app.use(express.json());
 // require("./routes/api-routes.js")(app);
 
 app.get('/', function (req, res){
-    res.send("blog is up")
+    res.send("blog is coming soon")
 })
 
 // Syncing our sequelize models and then starting our Express app

@@ -12,6 +12,9 @@ module.exports = function (sequelize, DataTypes) {
     },
   });
   Admin.associate = function (models) {
+      Admin.hasMany(models.Article, {
+          onDelete: "cascade"
+      })
 
 
   };
