@@ -28,6 +28,292 @@ app.get("/", function (req, res) {
   res.send("blog is coming soon");
 });
 
+//USER ROUTES
+
+//GET/read all users
+app.get("/api/users", function (req, res) {
+  db.User.findAll().then((users) => {
+    res.json(users);
+  });
+});
+
+//POST/create users
+app.post("/api/users", function (req, res) {
+  db.User.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  })
+    .then((newUser) => {
+      res.json(newUser);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+//PUT/update a user
+app.put("/api/users/:id", function (req, res) {
+  db.User.update(
+    {
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+    }
+  )
+    .then((updateUser) => {
+      if (updateUser[0] === 0) {
+        res.status(404).json(updateUser);
+      } else {
+        console.log(updateUser);
+        res.json(updateUser);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//DELETE a user
+app.delete("/api/users/:id", function (req, res) {
+  db.User.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((data) => {
+      if (data === 0) {
+        res.status(404).json(data);
+      } else {
+        res.json(data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//ADMIN ROUTES
+
+//GET/read all Admins
+app.get("/api/admin", function (req, res) {
+  db.Admin.findAll().then((admins) => {
+    res.json(admins);
+  });
+});
+
+//POST/create admin
+app.post("/api/admin", function (req, res) {
+  db.Admin.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  })
+    .then((newAdmin) => {
+      res.json(newAdmin);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+//PUT/update admin
+app.put("/api/admin/:id", function (req, res) {
+  db.Admin.update(
+    {
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+    }
+  )
+    .then((updateAdmin) => {
+      if (updateAdmin[0] === 0) {
+        res.status(404).json(updateAdmin);
+      } else {
+        console.log(updateAdmin);
+        res.json(updateAdmin);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//DELETE an admin
+app.delete("/api/admin/:id", function (req, res) {
+  db.Admin.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((data) => {
+      if (data === 0) {
+        res.status(404).json(data);
+      } else {
+        res.json(data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//ARTICLE ROUTES
+
+//GET/read all Articles
+app.get("/api/articles", function (req, res) {
+  db.Article.findAll().then((article) => {
+    res.json(article);
+  });
+});
+
+//POST/create articles
+app.post("/api/article", function (req, res) {
+  db.Article.create({
+    title: req.body.title,
+    article: req.body.article,
+    AdminId: req.body.AdminId,
+  })
+    .then((newArticle) => {
+      res.json(newArticle);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+//PUT/update Article
+app.put("/api/article/:id", function (req, res) {
+  db.Article.update(
+    {
+      title: req.body.title,
+      article: req.body.article,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+    }
+  )
+    .then((updateArticle) => {
+      if (updateArticle[0] === 0) {
+        res.status(404).json(updateArticle);
+      } else {
+        console.log(updateArticle);
+        res.json(updateArticle);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//DELETE Article
+app.delete("/api/article/:id", function (req, res) {
+  db.Article.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((data) => {
+      if (data === 0) {
+        res.status(404).json(data);
+      } else {
+        res.json(data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//COMMENT ROUTES
+
+//GET/read all Comments
+app.get("/api/comments", function (req, res) {
+  db.Comment.findAll().then((article) => {
+    res.json(article);
+  });
+});
+
+//POST/create comments
+app.post("/api/comment", function (req, res) {
+  db.Comment.create({
+    comment: req.body.comment,
+    rating: req.body.rating,
+    UserId: req.body.UserId,
+  })
+    .then((newComment) => {
+      res.json(newComment);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+//PUT/update Comment
+app.put("/api/comment/:id", function (req, res) {
+  db.Comment.update(
+    {
+      comment: req.body.comment,
+      rating: req.body.rating,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+    }
+  )
+    .then((updateComment) => {
+      if (updateComment[0] === 0) {
+        res.status(404).json(updateComment);
+      } else {
+        console.log(updateComment);
+        res.json(updateComment);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//DELETE Comment
+app.delete("/api/comment/:id", function (req, res) {
+  db.Comment.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((data) => {
+      if (data === 0) {
+        res.status(404).json(data);
+      } else {
+        res.json(data);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
 // Syncing our sequelize models and then starting our Express app
 // =============================================================
 db.sequelize.sync({ force: false }).then(function () {

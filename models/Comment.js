@@ -5,7 +5,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
     },
     rating: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   });
