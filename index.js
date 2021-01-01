@@ -38,7 +38,7 @@ app.get("/api/users", function (req, res) {
 });
 
 //POST/create users
-app.post("/api/users", function (req, res) {
+app.post("/api/newuser", function (req, res) {
   db.User.create({
     username: req.body.username,
     email: req.body.email,
@@ -110,7 +110,7 @@ app.get("/api/admin", function (req, res) {
 });
 
 //POST/create admin
-app.post("/api/admin", function (req, res) {
+app.post("/api/newadmin", function (req, res) {
   db.Admin.create({
     username: req.body.username,
     email: req.body.email,
@@ -182,7 +182,7 @@ app.get("/api/articles", function (req, res) {
 });
 
 //POST/create articles
-app.post("/api/article", function (req, res) {
+app.post("/api/newarticle", function (req, res) {
   db.Article.create({
     title: req.body.title,
     article: req.body.article,
@@ -253,7 +253,7 @@ app.get("/api/comments", function (req, res) {
 });
 
 //POST/create comments
-app.post("/api/comment", function (req, res) {
+app.post("/api/newcomment", function (req, res) {
   db.Comment.create({
     comment: req.body.comment,
     rating: req.body.rating,
