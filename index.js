@@ -120,7 +120,9 @@ app.delete("/api/user/:id", function (req, res) {
 //GET/read all Admins
 app.get("/api/admin", function (req, res) {
   console.log("++++++FIND ADMINS+++++");
-  db.Admin.findAll()
+  db.Admin.findAll({
+    include: [db.Article]
+  })
     .then((admins) => {
       console.log("++++++LOG ADMINS+++++");
       res.json(admins);
@@ -214,7 +216,9 @@ app.delete("/api/admin/:id", function (req, res) {
 
 //GET/read all Articles
 app.get("/api/articles", function (req, res) {
-  db.Article.findAll().then((article) => {
+  db.Article.findAll({
+    include: [db.Admin]
+  }).then((article) => {
     res.json(article);
   });
 });
