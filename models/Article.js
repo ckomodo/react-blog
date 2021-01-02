@@ -8,6 +8,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    // AdminId: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
   });
   Article.associate = function (models) {
     Article.belongsTo(models.Admin);

@@ -37,6 +37,21 @@ app.get("/api/users", function (req, res) {
   });
 });
 
+//GET route for one user and respective comments
+app.get("/api/user/:id", function (req, res) {
+  db.User.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [db.Comment]
+  }).then(user => {
+    console.log("+++++++this is a specific user+++++++++");
+    res.json(user);
+  });
+});
+
+
+
 //POST/create users
 app.post("/api/newuser", function (req, res) {
   db.User.create({
@@ -63,7 +78,7 @@ app.put("/api/users/:id", function (req, res) {
     {
       where: {
         id: req.params.id,
-      },
+      }
     }
   )
     .then((updateUser) => {
@@ -81,7 +96,7 @@ app.put("/api/users/:id", function (req, res) {
 });
 
 //DELETE a user
-app.delete("/api/users/:id", function (req, res) {
+app.delete("/api/user/:id", function (req, res) {
   db.User.destroy({
     where: {
       id: req.params.id,
@@ -104,8 +119,29 @@ app.delete("/api/users/:id", function (req, res) {
 
 //GET/read all Admins
 app.get("/api/admin", function (req, res) {
-  db.Admin.findAll().then((admins) => {
-    res.json(admins);
+  console.log("++++++FIND ADMINS+++++");
+  db.Admin.findAll()
+    .then((admins) => {
+      console.log("++++++LOG ADMINS+++++");
+      res.json(admins);
+    })
+    .catch((err) => {
+      console.log("++++++ERROR ADMINS+++++");
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+//GET route for a single admin with respective Articles
+app.get("/api/admin/:id", function (req, res) {
+  db.Admin.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [db.Article]
+  }).then(admin => {
+    console.log("========this is a specific admin======");
+    res.json(admin);
   });
 });
 
@@ -136,6 +172,8 @@ app.put("/api/admin/:id", function (req, res) {
       where: {
         id: req.params.id,
       },
+      //gets all admin's associated articles
+      include: [db.Article]
     }
   )
     .then((updateAdmin) => {
@@ -181,12 +219,25 @@ app.get("/api/articles", function (req, res) {
   });
 });
 
+
+
+app.get("/api/articles/:id", function (req, res){
+  db.Article.findOne({
+    where: {
+      id: req.params.id
+    },
+    include:[db.Admin]
+  }).then(article=>{
+    res.json(article)
+  });
+});
+
 //POST/create articles
 app.post("/api/newarticle", function (req, res) {
   db.Article.create({
     title: req.body.title,
     article: req.body.article,
-    AdminId: req.body.AdminId,
+    AdminId: req.body.AdminId
   })
     .then((newArticle) => {
       res.json(newArticle);
@@ -202,11 +253,12 @@ app.put("/api/article/:id", function (req, res) {
     {
       title: req.body.title,
       article: req.body.article,
+      AdminId: req.body.AdminId
     },
     {
       where: {
         id: req.params.id,
-      },
+      }
     }
   )
     .then((updateArticle) => {
@@ -252,6 +304,20 @@ app.get("/api/comments", function (req, res) {
   });
 });
 
+
+//GET route for a single comment with respective Users
+app.get("/api/comment/:id", function (req, res) {
+  db.Comment.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [db.User]
+  }).then(comment => {
+    console.log("========this is a specific comment======");
+    res.json(comment);
+  });
+});
+
 //POST/create comments
 app.post("/api/newcomment", function (req, res) {
   db.Comment.create({
@@ -277,7 +343,7 @@ app.put("/api/comment/:id", function (req, res) {
     {
       where: {
         id: req.params.id,
-      },
+      }
     }
   )
     .then((updateComment) => {
