@@ -3,10 +3,11 @@ module.exports = function (sequelize, DataTypes) {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     article: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: false
     },
     // AdminId: {
     //   type: DataTypes.STRING,

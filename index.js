@@ -36,9 +36,6 @@ app.use(userControllers);
 const commentControllers = require("./controllers/commentController");
 app.use(commentControllers);
 
-// Static directory
-// app.use(express.static("public"));
-
 // Routes
 // =============================================================
 // require("./routes/api-routes.js")(app);
