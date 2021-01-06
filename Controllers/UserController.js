@@ -1,13 +1,37 @@
 const express = require("express");
+const db = require("../models");
 const router = express.Router();
-db = require("../models");
-
+const bcrypt = require("bcrypt");
 //GET/read all users
 router.get("/api/users", function (req, res) {
   db.User.findAll().then((users) => {
     res.json(users);
   });
 });
+
+//POST route to log in user
+router.post("/user/login", (req, res)=>{
+db.User.findOne({
+  where: {
+    email: req.body.email,
+    username: req.body.username
+  }
+}).then(foundUser=>{
+  if(!foundUser){
+    res.status(404).send("wrong email and/or password")
+} 
+if (bcrypt.compareSync(req.body.password, foundUser.password)) {
+  return res.status(200).send("login successful")
+} else {
+  return res.status(403).send("wrong password")
+}
+
+})
+
+})
+
+
+
 
 //GET route for one user and respective comments
 router.get("/api/user/:id", function (req, res) {

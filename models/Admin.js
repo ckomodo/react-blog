@@ -1,3 +1,5 @@
+const bcrypt = require ("bcrypt")
+
 module.exports = function (sequelize, DataTypes) {
   var Admin = sequelize.define("Admin", {
     username: {
@@ -20,5 +22,9 @@ module.exports = function (sequelize, DataTypes) {
       onDelete: "cascade",
     });
   };
+
+  Admin.beforeCreate(function (admin){
+    admin.password = bcrypt.hashSync(admin.password, bcrypt.genSaltSync(10), null);
+  });
   return Admin;
 };
