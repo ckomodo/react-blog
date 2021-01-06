@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 db = require("../models");
+const bcrypt = require("bcrypt");
+
 
 //GET/read all Admins
 router.get("/api/admin", function (req, res) {
@@ -18,6 +20,26 @@ router.get("/api/admin", function (req, res) {
       res.status(500).json(err);
     });
 });
+
+//POST route to log in Admin
+router.post("/admin/login", (req, res) => {
+  db.Admin.findOne({
+    where: {
+      email: req.body.email,
+      username: req.body.username,
+    },
+  }).then((foundAdmin) => {
+    if (!foundAdmin) {
+      res.status(404).send("wrong email and/or password");
+    }
+    if (bcrypt.compareSync(req.body.password, foundAdmin.password)) {
+      return res.status(200).send("login successful");
+    } else {
+      return res.status(403).send("wrong password");
+    }
+  });
+});
+
 
 //GET route for a single admin with respective Articles
 router.get("/api/admin/:id", function (req, res) {
