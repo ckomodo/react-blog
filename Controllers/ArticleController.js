@@ -1,8 +1,37 @@
 const express = require("express");
 const router = express.Router();
 db = require("../models");
+const jwt = require ("jsonwebtoken")
 
-//GET/read all Articles in frontEndControllers
+
+//validation for secret route
+const checkAuthStatus = request => {
+  if(!request.headers.authorization){
+    return false
+  }
+  const token = request.headers.authorization.split(" ")[1]
+  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data)=>{
+
+    if(err) {
+      return false
+    }
+    else {
+      return data
+    }
+  })
+  console.log(loggedInAdmin);
+  return loggedInAdmin
+}
+
+//GET/read all Articles 
+router.get("/api/articles", function (req, res) {
+  db.Article.findAll({
+    include: [db.Admin],
+  }).then((article) => {
+    res.json(article);
+  });
+});
+
 
 //GET one Article with corresponding admin
 router.get("/api/articles/:id", function (req, res) {
@@ -18,21 +47,24 @@ router.get("/api/articles/:id", function (req, res) {
 
 //POST/create articles
 router.post("/api/newarticle", function (req, res) {
-  console.log("??????POST????????");
+const loggedInAdmin = checkAuthStatus(req);
+if(!loggedInAdmin){
+  return res.status(401).send("log in with your admin account to post articles")
+}
   db.Article.create({
     title: req.body.title,
     article: req.body.article,
     AdminId: req.body.AdminId,
   })
     .then((newArticle) => {
-      console.log("!!!!FIND THE ARTICLE!!!!!");
       res.json(newArticle);
     })
     .catch((err) => {
-      console.log("******ERRORS******");
       res.status(500).json(err);
     });
 });
+
+
 
 //PUT/update Article
 router.put("/api/article/:id", function (req, res) {

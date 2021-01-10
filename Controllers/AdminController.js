@@ -1,7 +1,28 @@
 const express = require("express");
 const router = express.Router();
-db = require("../models");
+const db = require("../models");
 const bcrypt = require("bcrypt");
+const jwt = require ("jsonwebtoken")
+
+
+//validation for secret route
+const checkAuthStatus = request => {
+  if(!request.headers.authorization){
+    return false
+  }
+  const token = request.headers.authorization.split(" ")[1]
+  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data)=>{
+
+    if(err) {
+      return false
+    }
+    else {
+      return data
+    }
+  })
+  console.log(loggedInAdmin);
+  return loggedInAdmin
+}
 
 
 //GET/read all Admins
@@ -32,8 +53,17 @@ router.post("/admin/login", (req, res) => {
     if (!foundAdmin) {
       res.status(404).send("wrong email and/or password");
     }
+    //compares password entered to password in database
     if (bcrypt.compareSync(req.body.password, foundAdmin.password)) {
-      return res.status(200).send("login successful");
+      const adminToken = {
+        username: foundAdmin.username,
+        email: foundAdmin.email
+      }
+
+      //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
+      const token = jwt.sign(adminToken, "mySecretString", {expiresIn: "0.5h"});
+
+      return res.status(200).send({token:token});
     } else {
       return res.status(403).send("wrong password");
     }
@@ -56,6 +86,7 @@ router.get("/api/admin/:id", function (req, res) {
 
 //POST/create admin
 router.post("/api/newadmin", function (req, res) {
+
   db.Admin.create({
     username: req.body.username,
     email: req.body.email,
@@ -71,6 +102,7 @@ router.post("/api/newadmin", function (req, res) {
 
 //PUT/update admin
 router.put("/api/admin/:id", function (req, res) {
+
   db.Admin.update(
     {
       username: req.body.username,
@@ -99,6 +131,8 @@ router.put("/api/admin/:id", function (req, res) {
     });
 });
 
+
+
 //DELETE an admin
 router.delete("/api/admin/:id", function (req, res) {
   db.Admin.destroy({
@@ -117,6 +151,18 @@ router.delete("/api/admin/:id", function (req, res) {
       console.log(err);
       res.status(500).json(err);
     });
+});
+
+
+
+//Secret route
+router.get("/secret", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  console.log(loggedInAdmin);
+if(!loggedInAdmin){
+  return res.status(401).send("invalid token")
+}
+res.status(200).send("valid token")
 });
 
 module.exports = router;

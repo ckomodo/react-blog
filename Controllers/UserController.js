@@ -2,6 +2,8 @@ const express = require("express");
 const db = require("../models");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 //GET/read all users
 router.get("/api/users", function (req, res) {
   db.User.findAll().then((users) => {
@@ -20,8 +22,19 @@ router.post("/user/login", (req, res) => {
     if (!foundUser) {
       res.status(404).send("wrong email and/or password");
     }
+    //compares password entered to password in database
     if (bcrypt.compareSync(req.body.password, foundUser.password)) {
-      return res.status(200).send("login successful");
+      const userToken = {
+        username: foundUser.username,
+        email: foundUser.email,
+      };
+
+      //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
+      const token = jwt.sign(userToken, "mySecretString", {
+        expiresIn: "0.5h",
+      });
+
+      return res.status(200).send({ token: token });
     } else {
       return res.status(403).send("wrong password");
     }
