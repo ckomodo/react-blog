@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const bcrypt = require("bcrypt");
-const jwt = require ("jsonwebtoken")
+const jwt = require ("jsonwebtoken");
+const Admin = require("../models/Admin");
 
 
 //validation for secret route
@@ -57,11 +58,12 @@ router.post("/admin/login", (req, res) => {
     if (bcrypt.compareSync(req.body.password, foundAdmin.password)) {
       const adminToken = {
         username: foundAdmin.username,
-        email: foundAdmin.email
+        email: foundAdmin.email,
+        id: foundAdmin.id
       }
 
       //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
-      const token = jwt.sign(adminToken, "mySecretString", {expiresIn: "0.5h"});
+      const token = jwt.sign(adminToken, "mySecretString", {expiresIn: "2h"});
 
       return res.status(200).send({token:token});
     } else {
@@ -163,6 +165,18 @@ if(!loggedInAdmin){
   return res.status(401).send("invalid token")
 }
 res.status(200).send("valid token")
+// db.Admin.findOne({
+//   where: {
+//     id: req.body.id
+//     }, 
+//     include: [db.Article]
+// }).then(dbAdmin =>{
+
+//   res.json(dbAdmin)
+// }).catch(err => {
+//   console.log(err);
+//   res.status(500).send("error occurred")
+// })
 });
 
 module.exports = router;

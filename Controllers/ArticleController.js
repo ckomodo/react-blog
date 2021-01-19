@@ -51,11 +51,18 @@ const loggedInAdmin = checkAuthStatus(req);
 if(!loggedInAdmin){
   return res.status(401).send("log in with your admin account to post articles")
 }
+console.log("this is the admin",loggedInAdmin);
+console.log("+++++++++++++++++");
+console.log(typeof loggedInAdmin.username)
+console.log("+++++++++++++++++");
+
   db.Article.create({
     title: req.body.title,
     article: req.body.article,
-    AdminId: req.body.AdminId,
+    AdminId: parseInt(loggedInAdmin.id)
+    
   })
+  
     .then((newArticle) => {
       res.json(newArticle);
     })
@@ -63,7 +70,6 @@ if(!loggedInAdmin){
       res.status(500).json(err);
     });
 });
-
 
 
 //PUT/update Article

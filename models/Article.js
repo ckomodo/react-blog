@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    // AdminId: {
+    // adminName: {
     //   type: DataTypes.STRING,
     //   allowNull: false,
     // },
