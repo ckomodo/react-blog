@@ -1,29 +1,26 @@
 const express = require("express");
 const router = express.Router();
 db = require("../models");
-const jwt = require ("jsonwebtoken")
-
+const jwt = require("jsonwebtoken");
 
 //validation for secret route
-const checkAuthStatus = request => {
-  if(!request.headers.authorization){
-    return false
+const checkAuthStatus = (request) => {
+  if (!request.headers.authorization) {
+    return false;
   }
-  const token = request.headers.authorization.split(" ")[1]
-  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data)=>{
-
-    if(err) {
-      return false
+  const token = request.headers.authorization.split(" ")[1];
+  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data) => {
+    if (err) {
+      return false;
+    } else {
+      return data;
     }
-    else {
-      return data
-    }
-  })
+  });
   console.log(loggedInAdmin);
-  return loggedInAdmin
-}
+  return loggedInAdmin;
+};
 
-//GET/read all Articles 
+//GET/read all Articles
 router.get("/api/articles", function (req, res) {
   db.Article.findAll({
     include: [db.Admin],
@@ -31,7 +28,6 @@ router.get("/api/articles", function (req, res) {
     res.json(article);
   });
 });
-
 
 //GET one Article with corresponding admin
 router.get("/api/articles/:id", function (req, res) {
@@ -47,22 +43,23 @@ router.get("/api/articles/:id", function (req, res) {
 
 //POST/create articles
 router.post("/api/newarticle", function (req, res) {
-const loggedInAdmin = checkAuthStatus(req);
-if(!loggedInAdmin){
-  return res.status(401).send("log in with your admin account to post articles")
-}
-console.log("this is the admin",loggedInAdmin);
-console.log("+++++++++++++++++");
-console.log(typeof loggedInAdmin.username)
-console.log("+++++++++++++++++");
+  const loggedInAdmin = checkAuthStatus(req);
+  if (!loggedInAdmin) {
+    return res
+      .status(401)
+      .send("log in with your admin account to post articles");
+  }
+  console.log("this is the admin", loggedInAdmin);
+  console.log("+++++++++++++++++");
+  console.log(typeof loggedInAdmin.username);
+  console.log("+++++++++++++++++");
 
   db.Article.create({
     title: req.body.title,
     article: req.body.article,
-    AdminId: parseInt(loggedInAdmin.id)
-    
+    AdminId: parseInt(loggedInAdmin.id),
   })
-  
+
     .then((newArticle) => {
       res.json(newArticle);
     })
@@ -71,9 +68,14 @@ console.log("+++++++++++++++++");
     });
 });
 
-
 //PUT/update Article
 router.put("/api/article/:id", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  if (!loggedInAdmin) {
+    return res
+      .status(401)
+      .send("log in with your admin account to edit articles");
+  }
   db.Article.update(
     {
       title: req.body.title,
@@ -102,6 +104,12 @@ router.put("/api/article/:id", function (req, res) {
 
 //DELETE Article
 router.delete("/api/article/:id", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  if (!loggedInAdmin) {
+    return res
+      .status(401)
+      .send("log in with your admin account to delete articles");
+  }
   db.Article.destroy({
     where: {
       id: req.params.id,

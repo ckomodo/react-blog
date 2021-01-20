@@ -57,6 +57,7 @@ router.post("/admin/login", (req, res) => {
     //compares password entered to password in database
     if (bcrypt.compareSync(req.body.password, foundAdmin.password)) {
       const adminToken = {
+      //attaches username, email and id of logged in user to the token
         username: foundAdmin.username,
         email: foundAdmin.email,
         id: foundAdmin.id
