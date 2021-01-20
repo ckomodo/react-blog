@@ -2,29 +2,58 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const bcrypt = require("bcrypt");
-const jwt = require ("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
+//added to check id of logged in admin 
+// const mainAdminName = "sakwa";
+// const password = "password";
+// const mainAdmin = {
+//   username: mainAdminName,
+//   password: password,
+// };
 
-
-//validation for secret route
-const checkAuthStatus = request => {
-  if(!request.headers.authorization){
-    return false
+//validation for protected routes
+function checkAuthStatus(request) {
+  if (!request.headers.authorization) {
+    return false;
   }
-  const token = request.headers.authorization.split(" ")[1]
-  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data)=>{
-
-    if(err) {
-      return false
+  const token = request.headers.authorization.split(" ")[1];
+  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data) => {
+    if (err) {
+      return false;
+    } else {
+      return data;
     }
-    else {
-      return data
-    }
-  })
+  });
   console.log(loggedInAdmin);
-  return loggedInAdmin
+  return loggedInAdmin;
 }
 
+//checking ID of logged in Admin
+// function checkAdminStatus(request) {
+//   if (
+//     request.headers.authorization ===
+//     {
+//       username: mainAdminName,
+//       password: password,
+//     }
+//   ) {
+//     const token = request.headers.authorization.split(" ")[1];
+//     const adminOne = jwt.verify(token, "mySecretString", (err, data) => {
+//       if (err) {
+//         return false;
+//       } else {
+//         return data;
+//       }
+//     });
+    
+//     console.log("############", adminOne, "############");
+//     return adminOne;
+//   }
+//    {
+//     ("contact main admin");
+//   } 
+// }
 
 //GET/read all Admins
 router.get("/api/admin", function (req, res) {
@@ -57,22 +86,21 @@ router.post("/admin/login", (req, res) => {
     //compares password entered to password in database
     if (bcrypt.compareSync(req.body.password, foundAdmin.password)) {
       const adminToken = {
-      //attaches username, email and id of logged in user to the token
+        //attaches username, email and id of logged in user to the token
         username: foundAdmin.username,
         email: foundAdmin.email,
-        id: foundAdmin.id
-      }
+        id: foundAdmin.id,
+      };
 
       //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
-      const token = jwt.sign(adminToken, "mySecretString", {expiresIn: "2h"});
+      const token = jwt.sign(adminToken, "mySecretString", { expiresIn: "2h" });
 
-      return res.status(200).send({token:token});
+      return res.status(200).send({ token: token });
     } else {
       return res.status(403).send("wrong password");
     }
   });
 });
-
 
 //GET route for a single admin with respective Articles
 router.get("/api/admin/:id", function (req, res) {
@@ -89,6 +117,10 @@ router.get("/api/admin/:id", function (req, res) {
 
 //POST/create admin
 router.post("/api/newadmin", function (req, res) {
+  // const adminOne = checkAdminStatus(req);
+  // if (!adminOne) {
+  //   return res.status(401).send("Contact Main Admin to be added as an admin");
+  // }
 
   db.Admin.create({
     username: req.body.username,
@@ -105,7 +137,6 @@ router.post("/api/newadmin", function (req, res) {
 
 //PUT/update admin
 router.put("/api/admin/:id", function (req, res) {
-
   db.Admin.update(
     {
       username: req.body.username,
@@ -134,8 +165,6 @@ router.put("/api/admin/:id", function (req, res) {
     });
 });
 
-
-
 //DELETE an admin
 router.delete("/api/admin/:id", function (req, res) {
   db.Admin.destroy({
@@ -156,28 +185,26 @@ router.delete("/api/admin/:id", function (req, res) {
     });
 });
 
-
-
-//Secret route
-router.get("/secret", function (req, res) {
+//GET route for profile of logged in admin
+router.get("/adminprofile", function (req, res) {
   const loggedInAdmin = checkAuthStatus(req);
   console.log(loggedInAdmin);
-if(!loggedInAdmin){
-  return res.status(401).send("invalid token")
-}
-res.status(200).send("valid token")
-// db.Admin.findOne({
-//   where: {
-//     id: req.body.id
-//     }, 
-//     include: [db.Article]
-// }).then(dbAdmin =>{
+  if (!loggedInAdmin) {
+    return res.status(401).send("only logged in admins can view this page");
+  }
+  // res.status(200).send("valid token");
+  db.Admin.findOne({
+    where: {
+      id: loggedInAdmin.id
+      },
+      include: [db.Article]
+  }).then(dbAdmin =>{
 
-//   res.json(dbAdmin)
-// }).catch(err => {
-//   console.log(err);
-//   res.status(500).send("error occurred")
-// })
+    res.json(dbAdmin)
+  }).catch(err => {
+    console.log(err);
+    res.status(500).send("error occurred")
+  })
 });
 
 module.exports = router;
