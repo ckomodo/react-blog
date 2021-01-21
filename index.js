@@ -10,12 +10,17 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080;
 
+//to enable front end app to make request to this app
+const CORS = require("cors");
+
 // Requiring our models for syncing
 var db = require("./models");
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(CORS());
 
 const frontEndRoutes = require("./controllers/frontEndController");
 app.use(frontEndRoutes);

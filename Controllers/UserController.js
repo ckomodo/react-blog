@@ -97,6 +97,31 @@ router.put("/api/users/:id", function (req, res) {
     });
 });
 
+
+// //GET route for profile of logged in user
+// router.get("/userprofile", function (req, res) {
+//   const loggedInUser = checkAuthStatus(req);
+//   console.log(loggedInUser);
+//   if (!loggedInUser) {
+//     return res.status(401).send("only logged in Users can view this page");
+//   }
+//   // res.status(200).send("valid token");
+//   db.User.findOne({
+//     where: {
+//       id: loggedInUser.id
+//       },
+//       include: [db.Article]
+//   }).then(dbUser =>{
+
+//     res.json(dbUser)
+//   }).catch(err => {
+//     console.log(err);
+//     res.status(500).send("error occurred")
+//   })
+// });
+
+
+
 //DELETE a user
 router.delete("/api/user/:id", function (req, res) {
   db.User.destroy({

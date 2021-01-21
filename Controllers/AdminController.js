@@ -4,7 +4,7 @@ const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
-//added to check id of logged in admin 
+//added to check id of logged in admin
 // const mainAdminName = "sakwa";
 // const password = "password";
 // const mainAdmin = {
@@ -46,13 +46,13 @@ function checkAuthStatus(request) {
 //         return data;
 //       }
 //     });
-    
+
 //     console.log("############", adminOne, "############");
 //     return adminOne;
 //   }
 //    {
 //     ("contact main admin");
-//   } 
+//   }
 // }
 
 //GET/read all Admins
@@ -115,6 +115,29 @@ router.get("/api/admin/:id", function (req, res) {
   });
 });
 
+//GET route for profile of logged in admin
+router.get("/adminprofile", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  console.log(loggedInAdmin);
+  if (!loggedInAdmin) {
+    return res.status(401).send("only logged in admins can view this page");
+  }
+  // res.status(200).send("valid token");
+  db.Admin.findOne({
+    where: {
+      id: loggedInAdmin.id,
+    },
+    include: [db.Article],
+  })
+    .then((dbAdmin) => {
+      res.json(dbAdmin);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("error occurred");
+    });
+});
+
 //POST/create admin
 router.post("/api/newadmin", function (req, res) {
   // const adminOne = checkAdminStatus(req);
@@ -137,6 +160,11 @@ router.post("/api/newadmin", function (req, res) {
 
 //PUT/update admin
 router.put("/api/admin/:id", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  console.log(loggedInAdmin);
+  if (!loggedInAdmin) {
+    return res.status(401).send("only logged in admins can edit their profiles");
+  }
   db.Admin.update(
     {
       username: req.body.username,
@@ -167,6 +195,11 @@ router.put("/api/admin/:id", function (req, res) {
 
 //DELETE an admin
 router.delete("/api/admin/:id", function (req, res) {
+  const loggedInAdmin = checkAuthStatus(req);
+  console.log(loggedInAdmin);
+  if (!loggedInAdmin) {
+    return res.status(401).send("only logged in admins can delete their profiles");
+  }
   db.Admin.destroy({
     where: {
       id: req.params.id,
@@ -183,28 +216,6 @@ router.delete("/api/admin/:id", function (req, res) {
       console.log(err);
       res.status(500).json(err);
     });
-});
-
-//GET route for profile of logged in admin
-router.get("/adminprofile", function (req, res) {
-  const loggedInAdmin = checkAuthStatus(req);
-  console.log(loggedInAdmin);
-  if (!loggedInAdmin) {
-    return res.status(401).send("only logged in admins can view this page");
-  }
-  // res.status(200).send("valid token");
-  db.Admin.findOne({
-    where: {
-      id: loggedInAdmin.id
-      },
-      include: [db.Article]
-  }).then(dbAdmin =>{
-
-    res.json(dbAdmin)
-  }).catch(err => {
-    console.log(err);
-    res.status(500).send("error occurred")
-  })
 });
 
 module.exports = router;
