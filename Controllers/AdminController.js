@@ -18,7 +18,7 @@ function checkAuthStatus(request) {
     return false;
   }
   const token = request.headers.authorization.split(" ")[1];
-  const loggedInAdmin = jwt.verify(token, "mySecretString", (err, data) => {
+  const loggedInAdmin = jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
     if (err) {
       return false;
     } else {
@@ -93,7 +93,7 @@ router.post("/admin/login", (req, res) => {
       };
 
       //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
-      const token = jwt.sign(adminToken, "mySecretString", { expiresIn: "2h" });
+      const token = jwt.sign(adminToken, process.env.JWT_SECRET, { expiresIn: "2h" });
 
       return res.status(200).send({ token: token });
     } else {

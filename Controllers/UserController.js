@@ -30,7 +30,7 @@ router.post("/user/login", (req, res) => {
       };
 
       //jwt.sign() in-built method uses info from userToken + a secret string + optional time duration. Creates a Token stored in local storage
-      const token = jwt.sign(userToken, "mySecretString", {
+      const token = jwt.sign(userToken, process.env.JWT_SECRET, {
         expiresIn: "0.5h",
       });
 
