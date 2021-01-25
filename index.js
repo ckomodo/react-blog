@@ -21,7 +21,7 @@ var db = require("./models");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//so the app accepts request from the front end
+//the app accepts request from the front end
 app.use(CORS());
 
 const frontEndRoutes = require("./controllers/frontEndController");
