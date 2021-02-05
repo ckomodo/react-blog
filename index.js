@@ -22,7 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //the app accepts request from the front end
-app.use(CORS());
+app.use(CORS({
+  origin: ["https://chrisblogfrontend.herokuapp.com"]
+}));
 
 const frontEndRoutes = require("./controllers/frontEndController");
 app.use(frontEndRoutes);
